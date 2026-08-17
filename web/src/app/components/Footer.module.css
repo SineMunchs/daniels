@@ -1,0 +1,63 @@
+.footer {
+  padding: 64px var(--frame) var(--frame);
+  color: var(--foreground);
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.top h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  opacity: 0.9;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+.colRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 14px;
+  text-align: right;
+}
+
+.colRight a {
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+
+.colRight a:hover {
+  opacity: 1;
+}
+
+.divider {
+  max-width: 1400px;
+  margin: 0 auto 32px;
+  border: none;
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 25%, transparent);
+}
+
+.credit {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 1400px;
+  margin: 32px auto 0;
+  font-size: 12px;
+  opacity: 0.55;
+}

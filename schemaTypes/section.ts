@@ -1,0 +1,59 @@
+import {defineField, defineType} from 'sanity'
+
+export default defineType({
+  name: 'section',
+  title: 'Sektion',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Titel',
+      description: 'Bruges både som overskrift og som label i navigationen.',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      description: 'Bruges som anker-link, f.eks. #om. Genereres ud fra titlen.',
+      type: 'slug',
+      options: {source: 'title'},
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'body',
+      title: 'Tekst',
+      description: 'Brug linjeskift for at adskille afsnit.',
+      type: 'text',
+      rows: 6,
+    }),
+    defineField({
+      name: 'images',
+      title: 'Billeder',
+      description:
+        'Vælg ét billede for en enkelt firkant, eller flere for et boks-grid.',
+      type: 'array',
+      of: [{type: 'image', options: {hotspot: true}}],
+    }),
+    defineField({
+      name: 'imagePosition',
+      title: 'Billedplacering',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Venstre', value: 'left'},
+          {title: 'Højre', value: 'right'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'left',
+    }),
+  ],
+  preview: {
+    select: {title: 'title', subtitle: 'slug.current'},
+    prepare: ({title, subtitle}) => ({
+      title: title || 'Unavngivet sektion',
+      subtitle: subtitle ? `#${subtitle}` : undefined,
+    }),
+  },
+})

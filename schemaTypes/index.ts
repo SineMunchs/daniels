@@ -1,3 +1,5 @@
-import post from './post'
+import frontpage from './frontpage'
+import kontakt from './kontakt'
+import section from './section'
 
-export const schemaTypes = [post]
+export const schemaTypes = [frontpage, kontakt, section]
