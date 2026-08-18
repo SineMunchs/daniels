@@ -23,9 +23,28 @@ export default defineType({
     defineField({
       name: 'body',
       title: 'Tekst',
-      description: 'Brug linjeskift for at adskille afsnit.',
-      type: 'text',
-      rows: 6,
+      description:
+        'Marker tekst og brug værktøjslinjen til at ændre skriftstørrelse, gøre den fed eller kursiv.',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          styles: [
+            {title: 'Normal', value: 'normal'},
+            {title: 'Lille', value: 'small'},
+            {title: 'Stor', value: 'large'},
+            {title: 'Meget stor', value: 'xlarge'},
+          ],
+          lists: [],
+          marks: {
+            decorators: [
+              {title: 'Fed', value: 'strong'},
+              {title: 'Kursiv', value: 'em'},
+            ],
+            annotations: [],
+          },
+        },
+      ],
     }),
     defineField({
       name: 'images',

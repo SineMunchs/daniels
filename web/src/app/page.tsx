@@ -1,4 +1,6 @@
 import Image from 'next/image'
+import {PortableText, type PortableTextComponents} from '@portabletext/react'
+import type {PortableTextBlock} from '@portabletext/types'
 import {client, urlFor} from '@/sanity/client'
 import type {SanityImageSource} from '@sanity/image-url'
 import styles from './page.module.css'
@@ -9,9 +11,17 @@ type Section = {
   _key: string
   title?: string
   slug?: {current?: string}
-  body?: string
+  body?: PortableTextBlock[]
   images?: SanityImageSource[]
   imagePosition?: 'left' | 'right'
+}
+
+const bodyComponents: PortableTextComponents = {
+  block: {
+    small: ({children}) => <p className={styles.textSmall}>{children}</p>,
+    large: ({children}) => <p className={styles.textLarge}>{children}</p>,
+    xlarge: ({children}) => <p className={styles.textXLarge}>{children}</p>,
+  },
 }
 
 type Frontpage = {
@@ -27,8 +37,6 @@ type Kontakt = {
 }
 
 function SectionBlock({section, index}: {section: Section; index: number}) {
-  const paragraphs =
-    section.body?.split('\n').map((line) => line.trim()).filter(Boolean) ?? []
   const images = section.images ?? []
   const imagePosition = section.imagePosition ?? 'left'
   const Heading = index === 0 ? 'h1' : 'h2'
@@ -39,54 +47,45 @@ function SectionBlock({section, index}: {section: Section; index: number}) {
         src={urlFor(image).width(700).height(700).url()}
         alt=""
         fill
-        sizes="(max-width: 980px) 50vw, 350px"
+        sizes="(max-width: 640px) 100vw, 50vw"
       />
     </div>
   )
 
-  const imageBoxes =
-    images.length === 1
-      ? imagePosition === 'right'
-        ? [<div key="blank" />, imageBox(images[0], 0)]
-        : [imageBox(images[0], 0), <div key="blank" />]
-      : images.map((image, i) => imageBox(image, i))
-
-  const imageArea = (
-    <div className={`${styles.cell} ${styles.spanTwo} ${styles.imageArea}`}>
-      {images.length > 0 && <div className={styles.imageGrid}>{imageBoxes}</div>}
+  const imageCell = (
+    <div className={`${styles.cell} ${styles.imageArea}`}>
+      {images.length > 1 ? (
+        <div className={styles.imageGrid}>
+          {images.map((image, i) => imageBox(image, i))}
+        </div>
+      ) : (
+        images.length === 1 && imageBox(images[0], 0)
+      )}
     </div>
   )
-  const decorativeCell = <div className={`${styles.cell} ${styles.decorative}`} />
+
+  const textCell = (
+    <div className={`${styles.cell} ${styles.heading} ${styles.paragraph}`}>
+      {section.title && <Heading>{section.title}</Heading>}
+      {section.body && section.body.length > 0 && (
+        <PortableText value={section.body} components={bodyComponents} />
+      )}
+    </div>
+  )
 
   return (
     <section id={section.slug?.current} className={styles.bento}>
-      <div className={`${styles.cell} ${styles.spanTwo} ${styles.heading}`}>
-        {section.title && <Heading>{section.title}</Heading>}
-      </div>
-      {decorativeCell}
-      {decorativeCell}
-
       {imagePosition === 'right' ? (
         <>
-          {decorativeCell}
-          {decorativeCell}
-          {imageArea}
+          {textCell}
+          {imageCell}
         </>
       ) : (
         <>
-          {imageArea}
-          {decorativeCell}
-          {decorativeCell}
+          {imageCell}
+          {textCell}
         </>
       )}
-
-      {decorativeCell}
-      <div className={`${styles.cell} ${styles.spanTwo} ${styles.paragraph}`}>
-        {paragraphs.map((paragraph, i) => (
-          <p key={i}>{paragraph}</p>
-        ))}
-      </div>
-      {decorativeCell}
     </section>
   )
 }
@@ -109,13 +108,11 @@ export default async function Home() {
         <SectionBlock key={section._key} section={section} index={i} />
       ))}
 
-      <section id="kontakt" className={styles.bento}>
-        <div className={`${styles.cell} ${styles.spanAll} ${styles.projectsHeading}`}>
+      <section id="kontakt" className={styles.contactSection}>
+        <div className={styles.projectsHeading}>
           <h2>{kontakt?.heading || 'Kontakt'}</h2>
         </div>
-
-        <div className={`${styles.cell} ${styles.decorative}`} />
-        <div className={`${styles.cell} ${styles.spanTwo} ${styles.paragraph}`}>
+        <div className={styles.paragraph}>
           {kontakt?.navn && <p>{kontakt.navn}</p>}
           {kontakt?.cvr && <p>CVR: {kontakt.cvr}</p>}
           {kontakt?.email && (
@@ -131,7 +128,6 @@ export default async function Home() {
             </p>
           )}
         </div>
-        <div className={`${styles.cell} ${styles.decorative}`} />
       </section>
     </div>
   )

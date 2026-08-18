@@ -43,8 +43,10 @@ export default async function Footer() {
       </div>
 
       <div className={styles.credit}>
-        <span>Website by S. Munch</span>
-        <span>© {year} Daniel</span>
+        <a href="https://sinemunch.com" target="_blank" rel="noopener noreferrer">
+          Website by S. Munch
+        </a>
+        <span>© {year} Artisan Enterprise</span>
       </div>
     </footer>
   )

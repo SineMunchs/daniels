@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-const siteName = "Daniels hjemmeside";
-const siteDescription = "Daniels personlige hjemmeside.";
+const siteName = "Artisan Entreprise";
+const siteDescription = "Artisan Entreprise.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -75,7 +75,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="da" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
         <Header
-          siteName={kontakt?.navn || "Daniel Mielke-Offendal"}
+          siteName={kontakt?.navn || "Artisan Entreprise"}
           links={navLinks}
         />
         {children}
