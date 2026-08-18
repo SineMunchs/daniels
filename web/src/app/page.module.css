@@ -7,6 +7,10 @@
   font-family: "Helvetica Neue", Helvetica;
 }
 
+.page > *:first-child {
+  border-top: none;
+}
+
 .bento {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

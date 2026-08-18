@@ -1,11 +1,11 @@
 :root {
   --background: #fff;
-  --foreground: #1a1512;
+  --foreground: #2a2a2a;
   --card: #fff;
-  --text-primary: #1a1512;
-  --text-secondary: #766a60;
+  --text-primary: #2a2a2a;
+  --text-secondary: #2a2a2a;
 
-  --grid-line: #e5e5e5;
+  --grid-line: color-mix(in srgb, var(--foreground) 33%, transparent);
   --grid-border: 1.5px;
 
   --frame: clamp(10px, 1.5vw, 24px);
@@ -14,7 +14,7 @@
 html {
   height: 100%;
   scroll-behavior: smooth;
-  scroll-padding-top: 88px;
+  scroll-padding-top: calc(var(--header-height, 88px) + 16px);
 }
 
 html,

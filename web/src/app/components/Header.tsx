@@ -13,8 +13,25 @@ export default function Header({
   siteName: string
   links: NavLink[]
 }) {
+  const headerRef = useRef<HTMLElement>(null)
   const detailsRef = useRef<HTMLDetailsElement>(null)
   const [activeHash, setActiveHash] = useState<string | null>(null)
+
+  // Keep the sticky header's real height available to CSS (scroll-padding-top)
+  // and to the scroll-tracking logic below, since it varies by breakpoint/content.
+  useEffect(() => {
+    const header = headerRef.current
+    if (!header) return
+
+    const setHeaderHeight = () => {
+      document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`)
+    }
+
+    setHeaderHeight()
+    const observer = new ResizeObserver(setHeaderHeight)
+    observer.observe(header)
+    return () => observer.disconnect()
+  }, [])
 
   // Track which section is currently in view to highlight the matching link.
   useEffect(() => {
@@ -24,17 +41,37 @@ export default function Header({
 
     if (sections.length === 0) return
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActiveHash(entry.target.id)
-        }
-      },
-      {rootMargin: '-96px 0px -60% 0px', threshold: 0},
-    )
+    let frame = 0
 
-    sections.forEach((section) => observer.observe(section))
-    return () => observer.disconnect()
+    const updateActive = () => {
+      frame = 0
+      const anchor = (headerRef.current?.offsetHeight ?? 0) + 16
+      const atBottom =
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1
+      if (atBottom) {
+        setActiveHash(sections[sections.length - 1].id)
+        return
+      }
+      let current = sections[0]
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= anchor) current = section
+      }
+      setActiveHash(current.id)
+    }
+
+    const onScroll = () => {
+      if (frame) return
+      frame = requestAnimationFrame(updateActive)
+    }
+
+    updateActive()
+    window.addEventListener('scroll', onScroll, {passive: true})
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (frame) cancelAnimationFrame(frame)
+    }
   }, [links])
 
   useEffect(() => {
@@ -68,12 +105,16 @@ export default function Header({
     if (detailsRef.current) detailsRef.current.open = false
   }
 
+  const activeLink = links.find((link) => link.hash === activeHash) ?? links[0]
+
   return (
-    <header className={styles.header}>
+    <header ref={headerRef} className={styles.header}>
       <div className={styles.inner}>
         <Link href="/" className={styles.name}>
           {siteName}
         </Link>
+
+        {activeLink && <p className={styles.current}>{activeLink.label}</p>}
 
         <nav className={styles.desktopNav} aria-label="Hovedmenu">
           {links.map((link) => (

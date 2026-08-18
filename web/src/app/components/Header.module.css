@@ -9,18 +9,21 @@
 .inner {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  align-items: start;
+  grid-template-rows: 1fr;
+  align-items: stretch;
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
   min-height: 220px;
-  padding: 40px;
+  padding: 0 40px;
   background: var(--card);
   border: var(--grid-border) solid var(--grid-line);
 }
 
 .name {
-  grid-column: 1 / 3;
+  grid-column: 1 / 2;
+  padding: 40px 24px 40px 0;
+  border-right: var(--grid-border) solid var(--grid-line);
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -33,33 +36,45 @@
   opacity: 1;
 }
 
+.current {
+  grid-column: 2 / 3;
+  min-width: 0;
+  padding: 40px 24px 40px 24px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
 /* --- desktop inline nav --- */
 
 .desktopNav {
   grid-column: 3 / 5;
   display: none;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-end;
   gap: 48px;
+  padding: 40px 0 40px 24px;
+  border-left: var(--grid-border) solid var(--grid-line);
 }
 
 .desktopLink {
   position: relative;
   font-size: 15px;
   font-weight: 500;
-  color: var(--text-primary);
-  opacity: 0.65;
+  color: color-mix(in srgb, var(--text-primary) 33%, transparent);
   padding: 4px 0;
-  transition: opacity 0.15s ease;
+  transition: color 0.15s ease;
 }
 
 .desktopLink:hover,
 .desktopLink:focus-visible {
-  opacity: 1;
+  color: var(--text-primary);
 }
 
 .desktopLink[data-active] {
-  opacity: 1;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -68,6 +83,7 @@
 .details {
   grid-column: 4 / 5;
   justify-self: end;
+  padding-top: 40px;
   position: static;
 }
 
@@ -79,6 +95,16 @@
 
   .name {
     grid-column: 1 / 4;
+    padding: 0;
+    border-right: none;
+  }
+
+  .current {
+    display: none;
+  }
+
+  .details {
+    padding-top: 0;
   }
 }
 
@@ -196,16 +222,19 @@
 }
 
 .link {
+  position: relative;
   padding: 15px 20px;
   font-size: 16px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: color-mix(in srgb, var(--text-primary) 33%, transparent);
   border-top: 1px solid var(--grid-line);
   opacity: 0;
   transform: translateY(-4px);
   animation: link-in 0.25s ease forwards;
   animation-delay: calc(60ms * var(--i, 0) + 60ms);
-  transition: background-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .link:first-child {
@@ -214,10 +243,12 @@
 
 .link:hover,
 .link:focus-visible {
+  color: var(--text-primary);
   background: color-mix(in srgb, var(--text-primary) 6%, transparent);
 }
 
 .link[data-active] {
+  color: var(--text-primary);
   font-weight: 700;
 }
 

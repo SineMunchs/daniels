@@ -65,7 +65,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       .filter((section) => section.title && section.slug?.current)
       .filter((section) => section.title!.trim().toLowerCase() !== "kontakt")
       .map((section) => ({
-        hash: section.slug!.current!,
+        hash: section.slug!.current!.trim(),
         label: section.title!,
       })),
     { hash: "kontakt", label: "Kontakt" },

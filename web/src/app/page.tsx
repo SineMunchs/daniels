@@ -74,7 +74,7 @@ function SectionBlock({section, index}: {section: Section; index: number}) {
   )
 
   return (
-    <section id={section.slug?.current} className={styles.bento}>
+    <section id={section.slug?.current?.trim()} className={styles.bento}>
       {imagePosition === 'right' ? (
         <>
           {textCell}
