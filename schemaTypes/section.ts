@@ -67,6 +67,39 @@ export default defineType({
       },
       initialValue: 'left',
     }),
+    defineField({
+      name: 'dateLocation',
+      title: 'Dato og sted',
+      description:
+        'Valgfri boks til f.eks. dato og sted for en begivenhed. Vises i sin egen lille kasse under teksten.',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          styles: [{title: 'Normal', value: 'normal'}],
+          lists: [],
+          marks: {
+            decorators: [{title: 'Fed', value: 'strong'}],
+            annotations: [],
+          },
+        },
+      ],
+    }),
+    defineField({
+      name: 'dateLocationPosition',
+      title: 'Placering af dato/sted-kasse',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Venstre', value: 'left'},
+          {title: 'Højre', value: 'right'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'left',
+      hidden: ({parent}) =>
+        !Array.isArray(parent?.dateLocation) || parent.dateLocation.length === 0,
+    }),
   ],
   preview: {
     select: {title: 'title', subtitle: 'slug.current'},

@@ -15,6 +15,8 @@ type Section = {
   body?: PortableTextBlock[]
   images?: SanityImageSource[]
   imagePosition?: 'left' | 'right'
+  dateLocation?: PortableTextBlock[]
+  dateLocationPosition?: 'left' | 'right'
 }
 
 const bodyComponents: PortableTextComponents = {
@@ -65,11 +67,36 @@ function SectionBlock({section, index}: {section: Section; index: number}) {
     </div>
   )
 
+  const hasDateLocation = (section.dateLocation?.length ?? 0) > 0
+  const dateLocationPosition = section.dateLocationPosition ?? 'left'
+
+  const dateLocationBox = (
+    <div className={styles.dateLocationBox}>
+      <PortableText value={section.dateLocation ?? []} components={bodyComponents} />
+    </div>
+  )
+  const dateLocationSpacer = <div className={styles.dateLocationSpacer} aria-hidden="true" />
+
   const textCell = (
     <div className={`${styles.cell} ${styles.heading} ${styles.paragraph}`}>
       {section.title && <Heading>{section.title}</Heading>}
       {section.body && section.body.length > 0 && (
         <PortableText value={section.body} components={bodyComponents} />
+      )}
+      {hasDateLocation && (
+        <div className={styles.dateLocationRow}>
+          {dateLocationPosition === 'right' ? (
+            <>
+              {dateLocationSpacer}
+              {dateLocationBox}
+            </>
+          ) : (
+            <>
+              {dateLocationBox}
+              {dateLocationSpacer}
+            </>
+          )}
+        </div>
       )}
     </div>
   )
@@ -93,7 +120,7 @@ function SectionBlock({section, index}: {section: Section; index: number}) {
 
 export default async function Home() {
   const frontpage = await client.fetch<Frontpage | null>(
-    `*[_type == "frontpage"][0]{sections[]{_key, title, slug, body, images, imagePosition}}`,
+    `*[_type == "frontpage"][0]{sections[]{_key, title, slug, body, images, imagePosition, dateLocation, dateLocationPosition}}`,
   )
   const kontakt = await client.fetch<Kontakt | null>(
     `*[_type == "kontakt"][0]{heading, navn, cvr, email, linkedin}`,

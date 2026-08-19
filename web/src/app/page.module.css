@@ -93,6 +93,31 @@
 }
 
 
+.dateLocationRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 4px;
+  border-top: var(--grid-border) solid var(--grid-line);
+}
+
+.dateLocationRow > * {
+  padding-top: 20px;
+}
+
+.dateLocationRow > *:first-child {
+  padding-right: 24px;
+  border-right: var(--grid-border) solid var(--grid-line);
+}
+
+.dateLocationRow > *:last-child {
+  padding-left: 24px;
+}
+
+.paragraph .dateLocationBox p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
 .projectsHeading {
   gap: 8px;
 }
@@ -147,5 +172,27 @@
   .heading h1,
   .heading h2 {
     font-size: 28px;
+  }
+
+  .imageArea:empty {
+    display: none;
+  }
+
+  .bento:has(.imageArea:empty) .cell {
+    border-bottom: none;
+  }
+
+  .dateLocationSpacer {
+    display: none;
+  }
+
+  .dateLocationRow {
+    grid-template-columns: 1fr;
+  }
+
+  .dateLocationRow > .dateLocationBox {
+    padding-right: 0;
+    padding-left: 0;
+    border-right: none;
   }
 }
