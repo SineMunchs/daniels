@@ -1,4 +1,5 @@
 import {client} from '@/sanity/client'
+import CopyEmail from './CopyEmail'
 import styles from './Footer.module.css'
 
 type Kontakt = {
@@ -27,7 +28,7 @@ export default async function Footer() {
           {kontakt?.cvr && <p>CVR: {kontakt.cvr}</p>}
           {kontakt?.email && (
             <p>
-              <a href={`mailto:${kontakt.email}`}>{kontakt.email}</a>
+              <CopyEmail email={kontakt.email} />
             </p>
           )}
         </div>

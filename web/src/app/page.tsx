@@ -3,6 +3,7 @@ import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import type {PortableTextBlock} from '@portabletext/types'
 import {client, urlFor} from '@/sanity/client'
 import type {SanityImageSource} from '@sanity/image-url'
+import CopyEmail from './components/CopyEmail'
 import styles from './page.module.css'
 
 export const revalidate = 0
@@ -117,7 +118,7 @@ export default async function Home() {
           {kontakt?.cvr && <p>CVR: {kontakt.cvr}</p>}
           {kontakt?.email && (
             <p>
-              <a href={`mailto:${kontakt.email}`}>{kontakt.email}</a>
+              <CopyEmail email={kontakt.email} />
             </p>
           )}
           {kontakt?.linkedin && (

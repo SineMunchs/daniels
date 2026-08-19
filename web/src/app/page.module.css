@@ -17,8 +17,7 @@
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  border-left: var(--grid-border) solid var(--grid-line);
-  border-top: var(--grid-border) solid var(--grid-line);
+  border: var(--grid-border) solid var(--grid-line);
 }
 
 .cell {
@@ -27,8 +26,10 @@
   justify-content: flex-start;
   padding: 40px;
   background: var(--card);
+}
+
+.cell:not(:last-child) {
   border-right: var(--grid-border) solid var(--grid-line);
-  border-bottom: var(--grid-border) solid var(--grid-line);
 }
 
 .heading h1,
@@ -123,7 +124,7 @@
 @media (max-width: 640px) {
   .page {
     gap: 24px;
-    padding: 0 16px 24px;
+    padding: 0 var(--frame) 24px;
   }
 
   .bento {
@@ -132,6 +133,11 @@
 
   .cell {
     padding: 28px 24px;
+  }
+
+  .cell:not(:last-child) {
+    border-right: none;
+    border-bottom: var(--grid-border) solid var(--grid-line);
   }
 
   .contactSection {

@@ -14,7 +14,7 @@
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  min-height: 220px;
+  min-height: 180px;
   padding: 0 40px;
   background: var(--card);
   border: var(--grid-border) solid var(--grid-line);
@@ -40,11 +40,12 @@
   grid-column: 2 / 3;
   min-width: 0;
   padding: 40px 24px 40px 24px;
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.01em;
   color: var(--text-primary);
+  border-right: var(--grid-border) solid var(--grid-line);
 }
 
 /* --- desktop inline nav --- */
@@ -56,7 +57,6 @@
   justify-content: flex-end;
   gap: 48px;
   padding: 40px 0 40px 24px;
-  border-left: var(--grid-border) solid var(--grid-line);
 }
 
 .desktopLink {
@@ -195,46 +195,45 @@
 
 .menu {
   position: fixed;
-  top: calc(var(--frame) + 84px);
+  top: calc(var(--header-height, 96px) + 12px);
   right: var(--frame);
+  bottom: var(--frame);
   left: var(--frame);
   z-index: 45;
   display: flex;
   flex-direction: column;
-  max-width: 280px;
-  margin-left: auto;
+  justify-content: center;
   overflow: hidden;
   background: var(--card);
   border: var(--grid-border) solid var(--grid-line);
-  box-shadow: 0 12px 32px color-mix(in srgb, #000 20%, transparent);
+  box-shadow: 0 24px 48px color-mix(in srgb, #000 22%, transparent);
   opacity: 1;
   transform: none;
   transition:
-    opacity 0.2s ease,
-    transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    opacity 0.25s ease,
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @starting-style {
   .details[open] .menu {
     opacity: 0;
-    transform: translateY(-8px) scale(0.98);
+    transform: translateY(-12px) scale(0.97);
   }
 }
 
 .link {
   position: relative;
-  padding: 15px 20px;
-  font-size: 16px;
-  font-weight: 500;
-  color: color-mix(in srgb, var(--text-primary) 33%, transparent);
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding: clamp(14px, 3.5vh, 22px) 28px;
+  overflow: hidden;
+  color: color-mix(in srgb, var(--text-primary) 40%, transparent);
   border-top: 1px solid var(--grid-line);
-  opacity: 0;
-  transform: translateY(-4px);
-  animation: link-in 0.25s ease forwards;
-  animation-delay: calc(60ms * var(--i, 0) + 60ms);
   transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
+    color 0.2s ease,
+    background-color 0.2s ease,
+    padding-left 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .link:first-child {
@@ -244,12 +243,41 @@
 .link:hover,
 .link:focus-visible {
   color: var(--text-primary);
-  background: color-mix(in srgb, var(--text-primary) 6%, transparent);
+  background: color-mix(in srgb, var(--text-primary) 5%, transparent);
+  padding-left: 38px;
 }
 
 .link[data-active] {
   color: var(--text-primary);
+}
+
+.menu:has(.link:hover) .link:not(:hover):not([data-active]) {
+  color: color-mix(in srgb, var(--text-primary) 16%, transparent);
+}
+
+.linkIndex {
+  font-size: 12px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--text-primary) 30%, transparent);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.2s ease;
+}
+
+.link:hover .linkIndex,
+.link:focus-visible .linkIndex,
+.link[data-active] .linkIndex {
+  color: inherit;
+}
+
+.linkLabel {
+  display: inline-block;
+  font-size: clamp(28px, 8.5vw, 44px);
   font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  clip-path: inset(0 0 100% 0);
+  animation: link-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(70ms * var(--i, 0) + 160ms);
 }
 
 @keyframes fade-in {
@@ -263,8 +291,7 @@
 
 @keyframes link-in {
   to {
-    opacity: 1;
-    transform: none;
+    clip-path: inset(0 0 0% 0);
   }
 }
 
@@ -272,8 +299,13 @@
   .burger span,
   .backdrop,
   .menu,
-  .link {
+  .link,
+  .linkLabel {
     animation: none !important;
     transition: none !important;
+  }
+
+  .linkLabel {
+    clip-path: none !important;
   }
 }

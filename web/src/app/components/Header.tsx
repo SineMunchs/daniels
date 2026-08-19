@@ -148,7 +148,8 @@ export default function Header({
                 onClick={closeMenu}
                 style={{'--i': i} as React.CSSProperties}
               >
-                {link.label}
+                <span className={styles.linkIndex}>{String(i + 1).padStart(2, '0')}</span>
+                <span className={styles.linkLabel}>{link.label}</span>
               </Link>
             ))}
           </nav>
