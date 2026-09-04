@@ -1,21 +1,57 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--frame);
+  gap: var(--section-gap);
   flex: 1;
   padding: 0 var(--frame) var(--frame);
-  font-family: "Helvetica Neue", Helvetica;
 }
 
 .page > *:first-child {
   border-top: none;
 }
 
+.page > * {
+  animation: fade-up 1.1s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+.page > *:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.page > *:nth-child(2) {
+  animation-delay: 0.25s;
+}
+
+.page > *:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.page > *:nth-child(n + 4) {
+  animation-delay: 0.55s;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page > * {
+    animation: none;
+  }
+}
+
 .bento {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   width: 100%;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   border: var(--grid-border) solid var(--grid-line);
 }
@@ -32,15 +68,6 @@
   border-right: var(--grid-border) solid var(--grid-line);
 }
 
-.heading h1,
-.heading h2 {
-  font-size: 34px;
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -1px;
-  color: var(--text-primary);
-}
-
 .imageArea {
   padding: 0;
   overflow: hidden;
@@ -51,11 +78,15 @@
   height: 100%;
 }
 
-.imageGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: 1fr;
+.extraImages {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   width: 100%;
+}
+
+.extraImages .bento:not(:first-child) {
+  border-top: none;
 }
 
 .imageBox {
@@ -92,31 +123,57 @@
   line-height: 1.3;
 }
 
-
-.dateLocationRow {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  margin-top: 4px;
-  border-top: var(--grid-border) solid var(--grid-line);
-}
-
-.dateLocationRow > * {
-  padding-top: 20px;
-}
-
-.dateLocationRow > *:first-child {
-  padding-right: 24px;
-  border-right: var(--grid-border) solid var(--grid-line);
-}
-
-.dateLocationRow > *:last-child {
-  padding-left: 24px;
-}
-
-.paragraph .dateLocationBox p {
-  font-size: 13px;
+.paragraph ul,
+.paragraph ol {
+  max-width: 620px;
+  font-size: 17px;
+  line-height: 1.7;
   color: var(--text-secondary);
+  padding-left: 1.3em;
 }
+
+.paragraph ul {
+  list-style-type: disc;
+}
+
+.paragraph ol {
+  list-style-type: decimal;
+}
+
+.paragraph li + li {
+  margin-top: 0.3em;
+}
+
+.paragraph a {
+  text-decoration: underline;
+}
+
+.fullRow {
+  grid-column: 1 / -1;
+}
+
+.imageArea.fullRow {
+  aspect-ratio: 21 / 9;
+}
+
+.centered {
+  align-items: center;
+  text-align: center;
+}
+
+.centered p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.noBaggrund {
+  background: transparent;
+}
+
+.bentoFlat {
+  border: none;
+}
+
 
 .projectsHeading {
   gap: 8px;
@@ -134,12 +191,153 @@
   color: var(--text-secondary);
 }
 
+.anbefalingerWrap {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.anbefalinger {
+  display: flex;
+  border: var(--grid-border) solid var(--grid-line);
+}
+
+.anbefalingCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 40px;
+  background: var(--card);
+  min-width: 0;
+}
+
+.anbefalingCard h3 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+
+.anbefalingCard p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.stjerner {
+  display: flex;
+  gap: 4px;
+  margin-top: auto;
+}
+
+.stjerneFyldt {
+  color: rgb(184, 90, 43);
+}
+
+.stjerneTom {
+  color: color-mix(in srgb, var(--foreground) 18%, transparent);
+}
+
+/* One anbefaling: centered, not stretched to fill the row. */
+.anbefalingerSingle {
+  justify-content: center;
+}
+
+.anbefalingerSingle .anbefalingCard {
+  flex: 0 1 380px;
+}
+
+/* Two anbefalinger: split the row in half. */
+.anbefalingerHalf .anbefalingCard {
+  flex: 1 1 50%;
+}
+
+.anbefalingerHalf .anbefalingCard:not(:last-child) {
+  border-right: var(--grid-border) solid var(--grid-line);
+}
+
+/* Three anbefalinger: centered as a group. */
+.anbefalingerCenter {
+  justify-content: center;
+}
+
+.anbefalingerCenter .anbefalingCard {
+  flex: 0 1 380px;
+}
+
+.anbefalingerCenter .anbefalingCard:not(:last-child) {
+  border-right: var(--grid-border) solid var(--grid-line);
+}
+
+/* Four or more: a horizontally scrollable row. */
+.anbefalingerScroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.anbefalingerScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.anbefalingerScroll .anbefalingCard {
+  flex: 0 0 38%;
+  scroll-snap-align: center;
+}
+
+.anbefalingerScroll .anbefalingCard:not(:last-child) {
+  border-right: var(--grid-border) solid var(--grid-line);
+}
+
+.galleriWrap {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.galleri {
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  border: var(--grid-border) solid var(--grid-line);
+}
+
+.galleri::-webkit-scrollbar {
+  display: none;
+}
+
+.galleriItem {
+  position: relative;
+  flex: 0 0 33.3333%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  scroll-snap-align: center;
+  background: color-mix(in srgb, var(--grid-line) 45%, var(--card));
+}
+
+.galleriItem:not(:last-child) {
+  border-right: var(--grid-border) solid var(--grid-line);
+}
+
+.galleriItem img {
+  object-fit: cover;
+}
+
+.contactCell {
+  background: rgba(184, 90, 43, 0.04);
+}
+
 .contactSection {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 40px;
   background: var(--card);
@@ -148,7 +346,7 @@
 
 @media (max-width: 640px) {
   .page {
-    gap: 24px;
+    gap: 56px;
     padding: 0 var(--frame) 24px;
   }
 
@@ -169,30 +367,66 @@
     padding: 28px 24px;
   }
 
-  .heading h1,
-  .heading h2 {
-    font-size: 28px;
-  }
-
-  .imageArea:empty {
+  .emptyCell {
     display: none;
   }
 
-  .bento:has(.imageArea:empty) .cell {
+  .bento:has(.emptyCell) .cell {
     border-bottom: none;
   }
 
-  .dateLocationSpacer {
-    display: none;
+  .extraImages {
+    flex-direction: row;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .dateLocationRow {
-    grid-template-columns: 1fr;
+  .extraImages .bento {
+    flex: 0 0 85%;
+    margin: 0;
+    scroll-snap-align: start;
   }
 
-  .dateLocationRow > .dateLocationBox {
-    padding-right: 0;
-    padding-left: 0;
+  .extraImages .bento:not(:first-child) {
+    border-top: var(--grid-border) solid var(--grid-line);
+  }
+
+  .anbefalingerWrap,
+  .galleriWrap {
+    flex: 0 0 85%;
+    margin: 0;
+    scroll-snap-align: start;
+  }
+
+  /* On narrow screens there's no room to split, so single/half/center stack. */
+  .anbefalinger:not(.anbefalingerScroll) {
+    flex-direction: column;
+  }
+
+  .anbefalingerSingle .anbefalingCard,
+  .anbefalingerHalf .anbefalingCard,
+  .anbefalingerCenter .anbefalingCard {
+    flex: none;
+    width: 100%;
+  }
+
+  .anbefalingCard {
+    padding: 28px 24px;
+  }
+
+  .anbefalinger:not(.anbefalingerScroll) .anbefalingCard:not(:last-child) {
     border-right: none;
+    border-bottom: var(--grid-border) solid var(--grid-line);
   }
+
+  .anbefalingerScroll .anbefalingCard {
+    flex: 0 0 78%;
+  }
+
+  .galleriItem {
+    flex: 0 0 78%;
+  }
+
 }

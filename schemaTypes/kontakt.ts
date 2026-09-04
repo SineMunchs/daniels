@@ -34,9 +34,35 @@ export default defineType({
       validation: (Rule) => Rule.email(),
     }),
     defineField({
-      name: 'linkedin',
-      title: 'LinkedIn URL',
-      type: 'url',
+      name: 'links',
+      title: 'Links',
+      description:
+        'Tilføj de links du vil vise, f.eks. Instagram eller LinkedIn. Åbner i en ny fane.',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'link',
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'Label',
+              description: 'Fx "Instagram" eller "LinkedIn".',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'url',
+              title: 'URL',
+              type: 'url',
+              validation: (Rule) => Rule.required().uri({scheme: ['http', 'https']}),
+            }),
+          ],
+          preview: {
+            select: {title: 'label', subtitle: 'url'},
+          },
+        },
+      ],
     }),
   ],
 })

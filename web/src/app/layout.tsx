@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { client } from "@/sanity/client";
 import "./globals.css";
 
 export const revalidate = 0;
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 const siteName = "Artisan Entreprise";
@@ -49,30 +38,50 @@ export const metadata: Metadata = {
 
 type NavData = {
   navn?: string;
-  sections?: { title?: string; slug?: { current?: string } }[];
+  sections?: {
+    _type?: string;
+    title?: string;
+    navTitle?: string;
+    navn?: string;
+    slug?: { current?: string };
+    showInNav?: boolean;
+  }[];
 };
+
+const navLabel = (section: {
+  title?: string;
+  navTitle?: string;
+  navn?: string;
+}) => section.navTitle?.trim() || section.navn?.trim() || section.title?.trim() || "";
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const [kontakt, frontpage] = await Promise.all([
     client.fetch<{ navn?: string } | null>(`*[_type == "kontakt"][0]{navn}`),
     client.fetch<NavData | null>(
-      `*[_type == "frontpage"][0]{sections[]{title, slug}}`,
+      `*[_type == "frontpage"][0]{sections[]{_type, title, navTitle, navn, slug, showInNav}}`,
     ),
   ]);
 
+  const hasKontaktSektion = (frontpage?.sections ?? []).some(
+    (section) => section._type === "kontaktSektion",
+  );
+
   const navLinks = [
     ...(frontpage?.sections ?? [])
-      .filter((section) => section.title && section.slug?.current)
-      .filter((section) => section.title!.trim().toLowerCase() !== "kontakt")
+      .filter((section) => section.showInNav !== false)
+      .filter((section) => navLabel(section) && section.slug?.current)
+      .filter(
+        (section) => !hasKontaktSektion || navLabel(section).toLowerCase() !== "kontakt",
+      )
       .map((section) => ({
         hash: section.slug!.current!.trim(),
-        label: section.title!,
+        label: navLabel(section),
       })),
-    { hash: "kontakt", label: "Kontakt" },
+    ...(hasKontaktSektion ? [{ hash: "kontakt", label: "Kontakt" }] : []),
   ];
 
   return (
-    <html lang="da" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="da">
       <body>
         <Header
           siteName={kontakt?.navn || "Artisan Entreprise"}

@@ -11,7 +11,7 @@ export default defineType({
       description:
         'Tilføj, omdøb og omarranger (træk i håndtaget) sektionerne på forsiden. Rækkefølgen her styrer både siden og navigationen.',
       type: 'array',
-      of: [{type: 'section'}],
+      of: [{type: 'section'}, {type: 'kontaktformular'}, {type: 'kontaktSektion'}],
     }),
   ],
   preview: {
@@ -20,7 +20,9 @@ export default defineType({
       title: 'Forside',
       subtitle:
         sections && sections.length > 0
-          ? sections.map((section: {title?: string}) => section.title).join(', ')
+          ? sections
+              .map((section: {title?: string; navn?: string}) => section.title || section.navn)
+              .join(', ')
           : 'Ingen sektioner endnu',
     }),
   },

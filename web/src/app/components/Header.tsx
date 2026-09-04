@@ -1,6 +1,7 @@
 'use client'
 
 import {useEffect, useRef, useState} from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import styles from './Header.module.css'
 
@@ -54,7 +55,10 @@ export default function Header({
       }
       let current = sections[0]
       for (const section of sections) {
-        if (section.getBoundingClientRect().top <= anchor) current = section
+        // +1px tolerance: native anchor scrolling (scroll-padding-top) can settle
+        // a fraction of a pixel below this same anchor value, which would otherwise
+        // miss the section the browser just scrolled to.
+        if (section.getBoundingClientRect().top <= anchor + 1) current = section
       }
       setActiveHash(current.id)
     }
@@ -110,8 +114,15 @@ export default function Header({
   return (
     <header ref={headerRef} className={styles.header}>
       <div className={styles.inner}>
-        <Link href="/" className={styles.name}>
-          {siteName}
+        <Link href="/" className={styles.name} aria-label={siteName}>
+          <Image
+            src="/logo.png"
+            alt={siteName}
+            fill
+            sizes="(max-width: 719px) 160px, 25vw"
+            className={styles.logo}
+            priority
+          />
         </Link>
 
         {activeLink && <p className={styles.current}>{activeLink.label}</p>}

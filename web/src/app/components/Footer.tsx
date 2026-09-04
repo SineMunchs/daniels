@@ -2,18 +2,20 @@ import {client} from '@/sanity/client'
 import CopyEmail from './CopyEmail'
 import styles from './Footer.module.css'
 
+type KontaktLink = {label?: string; url?: string}
+
 type Kontakt = {
   heading?: string
   connectHeading?: string
   navn?: string
   cvr?: string
   email?: string
-  linkedin?: string
+  links?: KontaktLink[]
 }
 
 export default async function Footer() {
   const kontakt = await client.fetch<Kontakt | null>(
-    `*[_type == "kontakt"][0]{heading, connectHeading, navn, cvr, email, linkedin}`,
+    `*[_type == "kontakt"][0]{heading, connectHeading, navn, cvr, email, links}`,
   )
   const year = new Date().getFullYear()
 
@@ -35,10 +37,13 @@ export default async function Footer() {
 
         <div className={styles.colRight}>
           <h3>{kontakt?.connectHeading || 'Connect'}</h3>
-          {kontakt?.linkedin && (
-            <a href={kontakt.linkedin} target="_blank" rel="noopener noreferrer">
-              LinkedIn
-            </a>
+          {kontakt?.links?.map(
+            (link, i) =>
+              link.url && (
+                <a key={i} href={link.url} target="_blank" rel="noopener noreferrer">
+                  {link.label || link.url}
+                </a>
+              ),
           )}
         </div>
       </div>
@@ -47,7 +52,7 @@ export default async function Footer() {
         <a href="https://sinemunch.com" target="_blank" rel="noopener noreferrer">
           Website by S. Munch
         </a>
-        <span>© {year} Artisan Enterprise</span>
+        <span>© {year} Artisan Entreprise</span>
       </div>
     </footer>
   )

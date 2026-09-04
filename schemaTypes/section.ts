@@ -6,57 +6,48 @@ export default defineType({
   type: 'object',
   fields: [
     defineField({
-      name: 'title',
-      title: 'Titel',
-      description: 'Bruges både som overskrift og som label i navigationen.',
+      name: 'navn',
+      title: 'Navn',
+      description:
+        'Sektionens navn. Bruges som overskrift, og som label i navigationsmenuen hvis "Vis i navigationsmenu" er slået til.',
       type: 'string',
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'showInNav',
+      title: 'Vis i navigationsmenu',
+      description: 'Vis denne sektion med navn i navigationsmenuen.',
+      type: 'boolean',
+      initialValue: true,
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
-      description: 'Bruges som anker-link, f.eks. #om. Genereres ud fra titlen.',
+      description: 'Bruges som anker-link, f.eks. #om. Genereres ud fra navnet.',
       type: 'slug',
-      options: {source: 'title'},
+      options: {source: 'navn'},
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'body',
-      title: 'Tekst',
-      description:
-        'Marker tekst og brug værktøjslinjen til at ændre skriftstørrelse, gøre den fed eller kursiv.',
+      name: 'elementer',
+      title: 'Indhold',
+      description: 'Tilføj indhold ét element ad gangen. De parres to og to og skifter side.',
       type: 'array',
       of: [
-        {
-          type: 'block',
-          styles: [
-            {title: 'Normal', value: 'normal'},
-            {title: 'Lille', value: 'small'},
-            {title: 'Stor', value: 'large'},
-            {title: 'Meget stor', value: 'xlarge'},
-          ],
-          lists: [],
-          marks: {
-            decorators: [
-              {title: 'Fed', value: 'strong'},
-              {title: 'Kursiv', value: 'em'},
-            ],
-            annotations: [],
-          },
-        },
+        {type: 'tekstElement'},
+        {type: 'billedeElement'},
+        {type: 'billedeTekstBlok'},
+        {type: 'kontaktformularFelt'},
+        {type: 'kontaktformularTekstBlok'},
+        {type: 'kontaktSektion', title: 'Kontaktoplysninger'},
+        {type: 'anbefalingerBlok'},
+        {type: 'billedeGalleriBlok'},
       ],
-    }),
-    defineField({
-      name: 'images',
-      title: 'Billeder',
-      description:
-        'Vælg ét billede for en enkelt firkant, eller flere for et boks-grid.',
-      type: 'array',
-      of: [{type: 'image', options: {hotspot: true}}],
     }),
     defineField({
       name: 'imagePosition',
-      title: 'Billedplacering',
+      title: 'Startside',
+      description: 'Hvilken side det første element (og hver anden herefter) starter i.',
       type: 'string',
       options: {
         list: [
@@ -66,43 +57,10 @@ export default defineType({
         layout: 'radio',
       },
       initialValue: 'left',
-    }),
-    defineField({
-      name: 'dateLocation',
-      title: 'Dato og sted',
-      description:
-        'Valgfri boks til f.eks. dato og sted for en begivenhed. Vises i sin egen lille kasse under teksten.',
-      type: 'array',
-      of: [
-        {
-          type: 'block',
-          styles: [{title: 'Normal', value: 'normal'}],
-          lists: [],
-          marks: {
-            decorators: [{title: 'Fed', value: 'strong'}],
-            annotations: [],
-          },
-        },
-      ],
-    }),
-    defineField({
-      name: 'dateLocationPosition',
-      title: 'Placering af dato/sted-kasse',
-      type: 'string',
-      options: {
-        list: [
-          {title: 'Venstre', value: 'left'},
-          {title: 'Højre', value: 'right'},
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'left',
-      hidden: ({parent}) =>
-        !Array.isArray(parent?.dateLocation) || parent.dateLocation.length === 0,
     }),
   ],
   preview: {
-    select: {title: 'title', subtitle: 'slug.current'},
+    select: {title: 'navn', subtitle: 'slug.current'},
     prepare: ({title, subtitle}) => ({
       title: title || 'Unavngivet sektion',
       subtitle: subtitle ? `#${subtitle}` : undefined,
