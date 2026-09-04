@@ -375,54 +375,44 @@
     border-bottom: none;
   }
 
-  .extraImages {
-    flex-direction: row;
-    gap: 12px;
+  /* Rows within a section (image/text pairs, the contact form, testimonials,
+     photo rows) stack vertically here, same as desktop — a section used to
+     switch this wrapper to a horizontal swipe carousel instead, which hid
+     content like the contact form or testimonials from anyone just
+     scrolling down (the normal mobile habit) unless they thought to swipe
+     sideways. Testimonials and the photo gallery are the exception: both
+     keep an internal horizontal scroll on mobile regardless of item count,
+     same card-peek pattern, since browsing a few similar cards/photos is
+     what that pattern is for. */
+
+  .anbefalinger {
     overflow-x: auto;
-    scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
-  .extraImages .bento {
-    flex: 0 0 85%;
-    margin: 0;
-    scroll-snap-align: start;
-  }
-
-  .extraImages .bento:not(:first-child) {
-    border-top: var(--grid-border) solid var(--grid-line);
-  }
-
-  .anbefalingerWrap,
-  .galleriWrap {
-    flex: 0 0 85%;
-    margin: 0;
-    scroll-snap-align: start;
-  }
-
-  /* On narrow screens there's no room to split, so single/half/center stack. */
-  .anbefalinger:not(.anbefalingerScroll) {
-    flex-direction: column;
-  }
-
-  .anbefalingerSingle .anbefalingCard,
-  .anbefalingerHalf .anbefalingCard,
-  .anbefalingerCenter .anbefalingCard {
-    flex: none;
-    width: 100%;
+  .anbefalinger::-webkit-scrollbar {
+    display: none;
   }
 
   .anbefalingCard {
     padding: 28px 24px;
   }
 
-  .anbefalinger:not(.anbefalingerScroll) .anbefalingCard:not(:last-child) {
-    border-right: none;
-    border-bottom: var(--grid-border) solid var(--grid-line);
+  /* Scoped as .anbefalinger .anbefalingCard (not bare .anbefalingCard) to
+     out-specificity .anbefalingerSingle/Half/Center .anbefalingCard above —
+     otherwise those desktop 50%/380px-basis rules win here and the cards
+     sit side by side instead of scrolling. */
+  .anbefalinger .anbefalingCard {
+    flex: 0 0 78%;
+    scroll-snap-align: start;
   }
 
-  .anbefalingerScroll .anbefalingCard {
-    flex: 0 0 78%;
+  .anbefalinger .anbefalingCard:not(:last-child) {
+    border-right: var(--grid-border) solid var(--grid-line);
+    border-bottom: none;
   }
 
   .galleriItem {

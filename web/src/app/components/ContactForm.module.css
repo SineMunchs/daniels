@@ -212,4 +212,19 @@ textarea.field {
   .rowAddress {
     grid-template-columns: 1fr;
   }
+
+  /* 16px keeps iOS Safari from zooming the page in on focus, and the taller
+     padding brings fields up to a ~44px touch target instead of the ~31px
+     they render at using the desktop sizing above. */
+  .field,
+  .fileButton,
+  .cancelButton,
+  .submitButton {
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+
+  textarea.field {
+    min-height: 110px;
+  }
 }

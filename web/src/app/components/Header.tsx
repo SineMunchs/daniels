@@ -147,7 +147,7 @@ export default function Header({
             <span />
           </summary>
 
-          <div className={styles.backdrop} aria-hidden="true" />
+          <div className={styles.backdrop} aria-hidden="true" onClick={closeMenu} />
 
           <nav className={styles.menu} aria-label="Hovedmenu">
             {links.map((link, i) => (
@@ -159,8 +159,7 @@ export default function Header({
                 onClick={closeMenu}
                 style={{'--i': i} as React.CSSProperties}
               >
-                <span className={styles.linkIndex}>{String(i + 1).padStart(2, '0')}</span>
-                <span className={styles.linkLabel}>{link.label}</span>
+                {link.label}
               </Link>
             ))}
           </nav>

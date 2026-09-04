@@ -4,7 +4,11 @@
   z-index: 50;
   background: var(--background);
   padding: var(--frame) var(--frame) 0;
-  animation: header-in 0.9s cubic-bezier(0.25, 1, 0.5, 1) both;
+  /* fill-mode: backwards (not "both") — a lingering "forwards" transform effect
+     would keep this element's computed transform at matrix(1,0,0,1,0,0) forever
+     instead of "none", which creates a containing block for the fixed-position
+     mobile menu/backdrop below and clips them to the header's own box. */
+  animation: header-in 0.9s cubic-bezier(0.25, 1, 0.5, 1) backwards;
 }
 
 @keyframes header-in {
@@ -104,23 +108,57 @@
 
 @media (max-width: 719px) {
   .inner {
-    min-height: 0;
-    padding: 28px 24px;
+    display: flex;
+    /* No vertical padding — .name sits flush at the bottom edge and
+       .current flush at the top edge (see align-self below) via min-height
+       alone: the row is exactly tall enough for the logo's own height plus
+       the title's line-height stacked, so both reach their edge with
+       nothing pushing them away from it, yet the header still has real
+       height instead of shrinking to whichever of the two is shorter. */
+    align-items: flex-end;
+    gap: 0;
+    min-height: calc(38px + 20px * 1.2);
+    padding: 0 16px;
   }
 
   .name {
-    grid-column: 1 / 4;
-    height: 40px;
-    margin-left: -24px;
+    flex: 0 0 auto;
+    width: 140px;
+    height: 38px;
+    margin-left: -16px;
     padding: 0;
     border-right: none;
   }
 
+  /* Same idea as the desktop .current label — show which section is in
+     view — left-aligned and flush with the top edge like on desktop. */
   .current {
-    display: none;
+    flex: 0 1 auto;
+    align-self: flex-start;
+    min-width: 0;
+    margin-left: -20px;
+    padding: 0;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-right: none;
   }
 
   .details {
+    flex: 0 0 auto;
+    align-self: center;
+    /* margin-left: auto pushes this item to the end of the row, consuming
+       the space .current (left-aligned, not flex-grow: 1) leaves unused —
+       without it, .details just sits wherever the natural content widths
+       end, short of the true edge. margin-right then cancels .inner's own
+       right padding, same trick as .name's margin-left on the other side,
+       so the burger sits flush against the header's right edge. */
+    margin-left: auto;
+    margin-right: -16px;
     padding-top: 0;
   }
 }
@@ -146,6 +184,11 @@
 }
 
 .burger {
+  position: relative;
+  /* Must stay above .backdrop (40) and .menu (45): the backdrop is a sibling
+     that covers the full viewport once open, and without this the toggle
+     button becomes untappable — every tap on it hits the backdrop instead. */
+  z-index: 46;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -153,7 +196,6 @@
   gap: 5px;
   width: 40px;
   height: 40px;
-  margin: -4px;
   border-radius: 999px;
   cursor: pointer;
   outline-offset: 2px;
@@ -197,7 +239,10 @@
   position: fixed;
   inset: 0;
   z-index: 40;
-  background: color-mix(in srgb, #000 40%, transparent);
+  /* Light touch on purpose: the dropdown below no longer covers the screen,
+     so this only needs to be present enough to (a) hint the menu is modal
+     and (b) give tap-outside-to-close a target — not dim the whole page. */
+  background: color-mix(in srgb, #000 12%, transparent);
   opacity: 0;
   animation: fade-in 0.2s ease forwards;
 }
@@ -208,49 +253,50 @@
   }
 }
 
-/* --- menu panel --- */
+/* --- menu panel: a simple dropdown, sized to its content and anchored
+   under the header, not a fullscreen takeover --- */
 
 .menu {
   position: fixed;
-  top: calc(var(--header-height, 96px) + 12px);
+  top: calc(var(--header-height, 96px) + 8px);
   right: var(--frame);
-  bottom: var(--frame);
   left: var(--frame);
   z-index: 45;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
+  max-height: calc(100vh - var(--header-height, 96px) - 2 * var(--frame));
+  overflow-y: auto;
   background: var(--card);
   border: var(--grid-border) solid var(--grid-line);
-  box-shadow: 0 24px 48px color-mix(in srgb, #000 22%, transparent);
+  box-shadow: 0 12px 28px color-mix(in srgb, #000 16%, transparent);
+  transform-origin: top center;
   opacity: 1;
   transform: none;
   transition:
-    opacity 0.25s ease,
-    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.18s ease,
+    transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @starting-style {
   .details[open] .menu {
     opacity: 0;
-    transform: translateY(-12px) scale(0.97);
+    transform: translateY(-6px) scaleY(0.96);
   }
 }
 
 .link {
-  position: relative;
-  display: flex;
-  align-items: baseline;
-  gap: 18px;
-  padding: clamp(14px, 3.5vh, 22px) 28px;
-  overflow: hidden;
-  color: color-mix(in srgb, #7c491d 40%, transparent);
+  display: block;
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: color-mix(in srgb, #b85a2b 55%, transparent);
   border-top: 1px solid var(--grid-line);
   transition:
-    color 0.2s ease,
-    background-color 0.2s ease,
-    padding-left 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    color 0.15s ease,
+    background-color 0.15s ease;
+  opacity: 0;
+  animation: link-fade-in 0.25s ease forwards;
+  animation-delay: calc(35ms * var(--i, 0) + 60ms);
 }
 
 .link:first-child {
@@ -259,42 +305,13 @@
 
 .link:hover,
 .link:focus-visible {
-  color: #7c491d;
-  background: color-mix(in srgb, #7c491d 5%, transparent);
-  padding-left: 38px;
+  color: #b85a2b;
+  background: color-mix(in srgb, #b85a2b 5%, transparent);
 }
 
 .link[data-active] {
-  color: #7c491d;
-}
-
-.menu:has(.link:hover) .link:not(:hover):not([data-active]) {
-  color: color-mix(in srgb, #7c491d 16%, transparent);
-}
-
-.linkIndex {
-  font-size: 12px;
-  font-weight: 500;
-  color: color-mix(in srgb, #7c491d 30%, transparent);
-  font-variant-numeric: tabular-nums;
-  transition: color 0.2s ease;
-}
-
-.link:hover .linkIndex,
-.link:focus-visible .linkIndex,
-.link[data-active] .linkIndex {
-  color: inherit;
-}
-
-.linkLabel {
-  display: inline-block;
-  font-size: clamp(28px, 8.5vw, 44px);
+  color: #b85a2b;
   font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  clip-path: inset(0 0 100% 0);
-  animation: link-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: calc(70ms * var(--i, 0) + 160ms);
 }
 
 @keyframes fade-in {
@@ -306,9 +323,14 @@
   }
 }
 
-@keyframes link-in {
+@keyframes link-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
   to {
-    clip-path: inset(0 0 0% 0);
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -317,13 +339,9 @@
   .burger span,
   .backdrop,
   .menu,
-  .link,
-  .linkLabel {
+  .link {
     animation: none !important;
     transition: none !important;
-  }
-
-  .linkLabel {
-    clip-path: none !important;
+    opacity: 1 !important;
   }
 }
