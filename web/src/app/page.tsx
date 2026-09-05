@@ -14,6 +14,7 @@ type ImageElement = SanityImageSource & {
   _type: 'billedeElement'
   asset?: {_ref: string}
   banner?: boolean
+  alt?: string
 }
 type TekstElement = {
   _key: string
@@ -21,13 +22,15 @@ type TekstElement = {
   body?: PortableTextBlock[]
   centreret?: boolean
   baggrund?: boolean
+  kontaktKnapper?: boolean
 }
 type BilledeTekstBlokElement = {
   _key: string
   _type: 'billedeTekstBlok'
-  billede?: SanityImageSource & {asset?: {_ref: string}}
+  billede?: SanityImageSource & {asset?: {_ref: string}; alt?: string}
   tekst?: PortableTextBlock[]
   billedePosition?: 'left' | 'right'
+  kontaktKnapper?: boolean
 }
 type KontaktformularFeltElement = {
   _key: string
@@ -41,6 +44,7 @@ type KontaktformularTekstBlokElement = {
   kontaktfelt?: {heading?: string; recipientEmail?: string}
   tekst?: PortableTextBlock[]
   kontaktfeltPosition?: 'left' | 'right'
+  kontaktKnapper?: boolean
 }
 type KontaktSektionElement = {_key: string; _type: 'kontaktSektion'}
 type Anbefaling = {
@@ -54,7 +58,7 @@ type AnbefalingerBlokElement = {
   _type: 'anbefalingerBlok'
   anbefalinger?: Anbefaling[]
 }
-type GalleriBillede = SanityImageSource & {_key: string; asset?: {_ref: string}}
+type GalleriBillede = SanityImageSource & {_key: string; asset?: {_ref: string}; alt?: string}
 type BilledeGalleriBlokElement = {
   _key: string
   _type: 'billedeGalleriBlok'
@@ -83,6 +87,8 @@ type Section = {
 
 const bodyComponents: PortableTextComponents = {
   block: {
+    h1: ({children}) => <h1 className={styles.textXLarge}>{children}</h1>,
+    h2: ({children}) => <h2 className={styles.textLarge}>{children}</h2>,
     small: ({children}) => <p className={styles.textSmall}>{children}</p>,
     large: ({children}) => <p className={styles.textLarge}>{children}</p>,
     xlarge: ({children}) => <p className={styles.textXLarge}>{children}</p>,
@@ -110,7 +116,37 @@ type Kontakt = {
   navn?: string
   cvr?: string
   email?: string
+  telefon?: string
   links?: KontaktLink[]
+}
+
+function KontaktKnapper({kontakt}: {kontakt: Kontakt | null}) {
+  if (!kontakt?.email && !kontakt?.telefon) return null
+
+  return (
+    <div className={styles.knapper}>
+      {kontakt?.email && (
+        <a href={`mailto:${kontakt.email}`} className={styles.knapKontakt}>
+          Kontakt
+        </a>
+      )}
+      {kontakt?.telefon && (
+        <a href={`tel:${kontakt.telefon.replace(/\s+/g, '')}`} className={styles.knapRing}>
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+            <path
+              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {kontakt.telefon}
+        </a>
+      )}
+    </div>
+  )
 }
 
 function ContactFormSection({section}: {section: Section}) {
@@ -238,7 +274,7 @@ function BilledeGalleriSection({element}: {element: BilledeGalleriBlokElement}) 
             {billede.asset?._ref && (
               <Image
                 src={urlFor(billede).width(700).height(700).url()}
-                alt=""
+                alt={billede.alt || ''}
                 fill
                 sizes="(max-width: 640px) 85vw, 33vw"
               />
@@ -269,7 +305,7 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
           {element.asset?._ref && (
             <Image
               src={urlFor(element).width(700).height(700).url()}
-              alt=""
+              alt={element.alt || ''}
               fill
               sizes="(max-width: 640px) 100vw, 50vw"
             />
@@ -279,8 +315,12 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
     }
     if (element._type === 'tekstElement') {
       return (
-        element.body &&
-        element.body.length > 0 && <PortableText value={element.body} components={bodyComponents} />
+        <>
+          {element.body && element.body.length > 0 && (
+            <PortableText value={element.body} components={bodyComponents} />
+          )}
+          {element.kontaktKnapper && <KontaktKnapper kontakt={kontakt} />}
+        </>
       )
     }
     if (element._type === 'kontaktformularFelt') {
@@ -315,6 +355,7 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
         {element.tekst && element.tekst.length > 0 && (
           <PortableText value={element.tekst} components={bodyComponents} />
         )}
+        {element.kontaktKnapper && <KontaktKnapper kontakt={kontakt} />}
       </div>
     )
     if (element._type === 'billedeTekstBlok') {
@@ -324,7 +365,7 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
             {element.billede?.asset?._ref && (
               <Image
                 src={urlFor(element.billede).width(700).height(700).url()}
-                alt=""
+                alt={element.billede.alt || ''}
                 fill
                 sizes="(max-width: 640px) 100vw, 50vw"
               />
@@ -355,7 +396,7 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
             {element.asset?._ref && (
               <Image
                 src={urlFor(element).width(1400).height(600).url()}
-                alt=""
+                alt={element.alt || ''}
                 fill
                 sizes="100vw"
               />
@@ -373,6 +414,7 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
         {tekst.body && tekst.body.length > 0 && (
           <PortableText value={tekst.body} components={bodyComponents} />
         )}
+        {tekst.kontaktKnapper && <KontaktKnapper kontakt={kontakt} />}
       </div>
     )
   }
@@ -492,7 +534,7 @@ export default async function Home() {
     `*[_type == "frontpage"][0]{sections[]{_key, _type, title, slug, imagePosition, elementer[]{...}, position, recipientEmail}}`,
   )
   const kontakt = await client.fetch<Kontakt | null>(
-    `*[_type == "kontakt"][0]{heading, navn, cvr, email, links}`,
+    `*[_type == "kontakt"][0]{heading, navn, cvr, email, telefon, links}`,
   )
 
   const sections = frontpage?.sections ?? []

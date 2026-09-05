@@ -4,6 +4,8 @@ export const portableTextBlock = {
   type: 'block',
   styles: [
     {title: 'Normal', value: 'normal'},
+    {title: 'Overskrift 1 (H1)', value: 'h1'},
+    {title: 'Overskrift 2 (H2)', value: 'h2'},
     {title: 'Lille', value: 'small'},
     {title: 'Stor', value: 'large'},
     {title: 'Meget stor', value: 'xlarge'},

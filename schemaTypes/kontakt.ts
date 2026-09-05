@@ -34,6 +34,13 @@ export default defineType({
       validation: (Rule) => Rule.email(),
     }),
     defineField({
+      name: 'telefon',
+      title: 'Telefon',
+      description:
+        'Bruges af "Ring"-knappen, som kan slås til på tekstelementer rundt om på siden.',
+      type: 'string',
+    }),
+    defineField({
       name: 'links',
       title: 'Links',
       description:

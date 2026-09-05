@@ -11,7 +11,20 @@ export default defineType({
       description:
         'Tilføj billederne til galleriet. De vises kvadratiske, tre ad gangen, med horisontal scroll hvis der er flere end tre.',
       type: 'array',
-      of: [{type: 'image', options: {hotspot: true}}],
+      of: [
+        {
+          type: 'image',
+          options: {hotspot: true},
+          fields: [
+            defineField({
+              name: 'alt',
+              title: 'Alt-tekst',
+              description: 'Beskriv billedet kort. Vigtigt for SEO og skærmlæsere.',
+              type: 'string',
+            }),
+          ],
+        },
+      ],
       validation: (Rule) => Rule.min(1),
     }),
   ],

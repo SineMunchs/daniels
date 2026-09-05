@@ -30,6 +30,14 @@ export default defineType({
       initialValue: true,
       hidden: ({parent}) => !(parent as {centreret?: boolean})?.centreret,
     }),
+    defineField({
+      name: 'kontaktKnapper',
+      title: 'Vis "Kontakt" og "Ring" knapper',
+      description:
+        'Tilføjer en udfyldt "Kontakt"-knap (link til e-mail) og en "Ring"-knap (link til telefonnummer) under teksten. Henter e-mail og telefonnummer fra Footer-dokumentet.',
+      type: 'boolean',
+      initialValue: false,
+    }),
   ],
   preview: {
     select: {body: 'body'},

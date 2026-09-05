@@ -8,26 +8,38 @@ export const revalidate = 0;
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 const siteName = "Artisan Entreprise";
-const siteDescription = "Artisan Entreprise.";
+const pageTitle = "Artisan Entreprise – Tømrer & Håndværker i Hvalsø";
+const siteDescription =
+  "Har du brug for en pålidelig håndværker i Hvalsø og omegn? Artisan Entreprise klarer alt fra gulve til køkken. Få et uforpligtende tilbud i dag.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: siteName,
+    default: pageTitle,
     template: `%s | ${siteName}`,
   },
   description: siteDescription,
+  keywords: [
+    "håndværker Hvalsø",
+    "tømrer Hvalsø",
+    "entreprenør Lejre",
+    "håndværker Roskilde",
+    "gulve",
+    "køkkenmontering",
+    "renovering",
+  ],
   openGraph: {
     type: "website",
     locale: "da_DK",
     url: siteUrl,
     siteName,
-    title: siteName,
+    title: pageTitle,
     description: siteDescription,
+    images: [{url: "/logo.png"}],
   },
   twitter: {
     card: "summary",
-    title: siteName,
+    title: pageTitle,
     description: siteDescription,
   },
   robots: {
@@ -66,6 +78,21 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     (section) => section._type === "kontaktSektion",
   );
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HomeAndConstructionBusiness",
+    name: kontakt?.navn || siteName,
+    description: siteDescription,
+    url: siteUrl,
+    image: `${siteUrl}/logo.png`,
+    areaServed: ["Hvalsø", "Roskilde", "Lejre"],
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Hvalsø",
+      addressCountry: "DK",
+    },
+  };
+
   const navLinks = [
     ...(frontpage?.sections ?? [])
       .filter((section) => section.showInNav !== false)
@@ -83,6 +110,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="da">
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Header
           siteName={kontakt?.navn || "Artisan Entreprise"}
           links={navLinks}

@@ -12,6 +12,14 @@ export default defineType({
       type: 'image',
       options: {hotspot: true},
       validation: (Rule) => Rule.required(),
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt-tekst',
+          description: 'Beskriv billedet kort. Vigtigt for SEO og skærmlæsere.',
+          type: 'string',
+        }),
+      ],
     }),
     defineField({
       name: 'tekst',
@@ -20,6 +28,14 @@ export default defineType({
         'Marker tekst og brug værktøjslinjen til at ændre skriftstørrelse, formatere, lave lister og tilføje links.',
       type: 'array',
       of: [portableTextBlock],
+    }),
+    defineField({
+      name: 'kontaktKnapper',
+      title: 'Vis "Kontakt" og "Ring" knapper',
+      description:
+        'Tilføjer en udfyldt "Kontakt"-knap (link til e-mail) og en "Ring"-knap (link til telefonnummer) under teksten. Henter e-mail og telefonnummer fra Footer-dokumentet.',
+      type: 'boolean',
+      initialValue: false,
     }),
     defineField({
       name: 'billedePosition',
