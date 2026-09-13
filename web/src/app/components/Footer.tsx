@@ -49,10 +49,13 @@ export default async function Footer() {
       </div>
 
       <div className={styles.credit}>
-        <a href="https://sinemunch.com" target="_blank" rel="noopener noreferrer">
-          Website by S. Munch
-        </a>
-        <span>© {year} Artisan Entreprise</span>
+        <div className={styles.creditLeft}>
+          <a href="https://sinemunch.com" target="_blank" rel="noopener noreferrer">
+            Website by S. Munch
+          </a>
+          <span>© {year} Artisan Entreprise</span>
+        </div>
+        <span className={styles.aiNote}>Det visuelle materiale er foreløbigt AI-genereret.</span>
       </div>
     </footer>
   )
