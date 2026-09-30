@@ -15,6 +15,7 @@ type ImageElement = SanityImageSource & {
   asset?: {_ref: string}
   banner?: boolean
   alt?: string
+  visning?: 'kvadratisk' | 'fuld'
 }
 type TekstElement = {
   _key: string
@@ -27,7 +28,11 @@ type TekstElement = {
 type BilledeTekstBlokElement = {
   _key: string
   _type: 'billedeTekstBlok'
-  billede?: SanityImageSource & {asset?: {_ref: string}; alt?: string}
+  billede?: SanityImageSource & {
+    asset?: {_ref: string}
+    alt?: string
+    visning?: 'kvadratisk' | 'fuld'
+  }
   tekst?: PortableTextBlock[]
   billedePosition?: 'left' | 'right'
   kontaktKnapper?: boolean
@@ -83,6 +88,17 @@ type Section = {
   imagePosition?: 'left' | 'right'
   position?: 'left' | 'right'
   recipientEmail?: string
+}
+
+// Sanity image asset refs encode their pixel dimensions, e.g.
+// "image-<hash>-3024x4032-jpg", so the aspect ratio can be read
+// without an extra dereferencing query.
+function getImageAspectRatio(source?: {asset?: {_ref?: string}}): number | undefined {
+  const match = source?.asset?._ref?.match(/-(\d+)x(\d+)-/)
+  if (!match) return undefined
+  const width = Number(match[1])
+  const height = Number(match[2])
+  return width && height ? width / height : undefined
 }
 
 const bodyComponents: PortableTextComponents = {
@@ -300,11 +316,13 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
 
   const renderElement = (element: SectionElement) => {
     if (element._type === 'billedeElement') {
+      const fuld = element.visning === 'fuld'
+      const image = fuld ? urlFor(element).width(1000) : urlFor(element).width(700).height(700)
       return (
         <div className={styles.imageBox}>
           {element.asset?._ref && (
             <Image
-              src={urlFor(element).width(700).height(700).url()}
+              src={image.url()}
               alt={element.alt || ''}
               fill
               sizes="(max-width: 640px) 100vw, 50vw"
@@ -340,8 +358,20 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
     return styles.contactCell
   }
 
+  const cellStyle = (element: SectionElement) => {
+    if (element._type === 'billedeElement' && element.visning === 'fuld') {
+      const ratio = getImageAspectRatio(element)
+      // Grid rows stretch cells to match height by default, which would
+      // override the aspect-ratio below and crop the image again.
+      return ratio ? {aspectRatio: ratio, alignSelf: 'start' as const} : undefined
+    }
+    return undefined
+  }
+
   const elementCell = (element: SectionElement) => (
-    <div className={`${styles.cell} ${cellClass(element)}`}>{renderElement(element)}</div>
+    <div className={`${styles.cell} ${cellClass(element)}`} style={cellStyle(element)}>
+      {renderElement(element)}
+    </div>
   )
 
   const emptyCell = <div className={`${styles.cell} ${styles.emptyCell}`} aria-hidden="true" />
@@ -359,13 +389,19 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
       </div>
     )
     if (element._type === 'billedeTekstBlok') {
+      const billede = element.billede
+      const fuld = billede?.visning === 'fuld'
+      const ratio = fuld ? getImageAspectRatio(billede) : undefined
       const imageCell = (
-        <div className={`${styles.cell} ${styles.imageArea}`}>
+        <div
+          className={`${styles.cell} ${styles.imageArea}`}
+          style={ratio ? {aspectRatio: ratio, alignSelf: 'start'} : undefined}
+        >
           <div className={styles.imageBox}>
-            {element.billede?.asset?._ref && (
+            {billede?.asset?._ref && (
               <Image
-                src={urlFor(element.billede).width(700).height(700).url()}
-                alt={element.billede.alt || ''}
+                src={(fuld ? urlFor(billede).width(1000) : urlFor(billede).width(700).height(700)).url()}
+                alt={billede.alt || ''}
                 fill
                 sizes="(max-width: 640px) 100vw, 50vw"
               />
@@ -390,16 +426,17 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
   // spans the full width of the row.
   const fullRowCell = (element: SectionElement) => {
     if (element._type === 'billedeElement') {
+      const fuld = element.visning === 'fuld'
+      const ratio = fuld ? getImageAspectRatio(element) : undefined
+      const image = fuld ? urlFor(element).width(1400) : urlFor(element).width(1400).height(600)
       return (
-        <div className={`${styles.cell} ${styles.imageArea} ${styles.fullRow}`}>
+        <div
+          className={`${styles.cell} ${styles.imageArea} ${styles.fullRow}`}
+          style={ratio ? {aspectRatio: ratio} : undefined}
+        >
           <div className={styles.imageBox}>
             {element.asset?._ref && (
-              <Image
-                src={urlFor(element).width(1400).height(600).url()}
-                alt={element.alt || ''}
-                fill
-                sizes="100vw"
-              />
+              <Image src={image.url()} alt={element.alt || ''} fill sizes="100vw" />
             )}
           </div>
         </div>

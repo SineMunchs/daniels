@@ -19,5 +19,20 @@ export default defineType({
       type: 'boolean',
       initialValue: false,
     }),
+    defineField({
+      name: 'visning',
+      title: 'Visning',
+      description:
+        'Kvadratisk beskærer billedet til et kvadrat. Fuld størrelse viser hele billedet i dets eget højde-bredde-forhold.',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Kvadratisk', value: 'kvadratisk'},
+          {title: 'Fuld størrelse', value: 'fuld'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'kvadratisk',
+    }),
   ],
 })
