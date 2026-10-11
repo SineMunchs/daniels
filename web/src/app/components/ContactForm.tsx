@@ -42,15 +42,8 @@ async function compressImage(file: File): Promise<File> {
   }
 }
 
-export default function ContactForm({
-  title,
-  recipientEmail,
-}: {
-  title: string
-  recipientEmail: string
-}) {
-  const action = sendContactForm.bind(null, recipientEmail)
-  const [state, formAction, pending] = useActionState(action, initialState)
+export default function ContactForm({title}: {title: string}) {
+  const [state, formAction, pending] = useActionState(sendContactForm, initialState)
   const formRef = useRef<HTMLFormElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [files, setFiles] = useState<File[]>([])

@@ -41,12 +41,11 @@ type KontaktformularFeltElement = {
   _key: string
   _type: 'kontaktformularFelt'
   heading?: string
-  recipientEmail?: string
 }
 type KontaktformularTekstBlokElement = {
   _key: string
   _type: 'kontaktformularTekstBlok'
-  kontaktfelt?: {heading?: string; recipientEmail?: string}
+  kontaktfelt?: {heading?: string}
   tekst?: PortableTextBlock[]
   kontaktfeltPosition?: 'left' | 'right'
   kontaktKnapper?: boolean
@@ -87,7 +86,6 @@ type Section = {
   elementer?: SectionElement[]
   imagePosition?: 'left' | 'right'
   position?: 'left' | 'right'
-  recipientEmail?: string
 }
 
 // Sanity image asset refs encode their pixel dimensions, e.g.
@@ -172,7 +170,6 @@ function ContactFormSection({section}: {section: Section}) {
     <div className={`${styles.cell} ${styles.contactCell}`}>
       <ContactForm
         title={section.title || 'Få et uforpligtende tilbud'}
-        recipientEmail={section.recipientEmail || 'tjekforrod@gmail.com'}
       />
     </div>
   )
@@ -345,7 +342,6 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
       return (
         <ContactForm
           title={element.heading || 'Få et uforpligtende tilbud'}
-          recipientEmail={element.recipientEmail || 'tjekforrod@gmail.com'}
         />
       )
     }
@@ -415,7 +411,6 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
       <div className={`${styles.cell} ${styles.contactCell}`}>
         <ContactForm
           title={element.kontaktfelt?.heading || 'Få et uforpligtende tilbud'}
-          recipientEmail={element.kontaktfelt?.recipientEmail || 'tjekforrod@gmail.com'}
         />
       </div>
     )
@@ -568,7 +563,7 @@ function SectionBlock({section, kontakt}: {section: Section; kontakt: Kontakt | 
 
 export default async function Home() {
   const frontpage = await client.fetch<Frontpage | null>(
-    `*[_type == "frontpage"][0]{sections[]{_key, _type, title, slug, imagePosition, elementer[]{...}, position, recipientEmail}}`,
+    `*[_type == "frontpage"][0]{sections[]{_key, _type, title, slug, imagePosition, elementer[]{...}, position}}`,
   )
   const kontakt = await client.fetch<Kontakt | null>(
     `*[_type == "kontakt"][0]{heading, navn, cvr, email, telefon, links}`,

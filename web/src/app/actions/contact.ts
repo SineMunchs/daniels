@@ -7,11 +7,11 @@ export type ContactFormState = {
   message?: string
 }
 
+const RECIPIENT_EMAIL = process.env.CONTACT_RECIPIENT_EMAIL ?? 'kontakt@artisanentreprise.dk'
 const MAX_FILES = 2
 const MAX_TOTAL_BYTES = 5 * 1024 * 1024
 
 export async function sendContactForm(
-  recipientEmail: string,
   _prevState: ContactFormState,
   formData: FormData,
 ): Promise<ContactFormState> {
@@ -58,7 +58,7 @@ export async function sendContactForm(
 
   const { error } = await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL ?? 'onboarding@resend.dev',
-    to: recipientEmail,
+    to: RECIPIENT_EMAIL,
     replyTo: email,
     subject: `Ny tilbudsforespørgsel fra ${navn}`,
     text: [
